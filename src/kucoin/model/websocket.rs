@@ -38,6 +38,7 @@ pub enum WSTopic {
     PositionChange,
     MarginTradeOrder(String),
     TradeOrders,
+    Kline(String, String),
 }
 
 pub enum WSType {
@@ -86,6 +87,7 @@ pub enum KucoinWebsocketMsg {
     TradeFilledMsg(WSResp<TradeFilled>),
     TradeCanceledMsg(WSResp<TradeCanceled>),
     TradeUpdateMsg(WSResp<TradeUpdate>),
+    KlineMsg(WSResp<Kline>),
     Error(String),
 }
 
@@ -537,4 +539,12 @@ pub struct TradeUpdate {
     pub remain_size: String,
     pub status: String,
     pub ts: i64,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Kline {
+    pub symbol: String,
+    pub candles: Vec<String>,
+    pub time: i64
 }

@@ -127,6 +127,8 @@ fn parse_message(msg: Message) -> Result<KucoinWebsocketMsg, APIError> {
         Message::Text(msg) => {
             if msg.contains("\"type\":\"welcome\"") || msg.contains("\"type\":\"ack\"") {
                 Ok(KucoinWebsocketMsg::WelcomeMsg(serde_json::from_str(&msg)?))
+            } else if msg.contains("\"subject\":\"trade.candles") {
+                Ok(KucoinWebsocketMsg::KlineMsg(serde_json::from_str(&msg)?))
             } else if msg.contains("\"type\":\"ping\"") {
                 Ok(KucoinWebsocketMsg::PingMsg(serde_json::from_str(&msg)?))
             } else if msg.contains("\"type\":\"pong\"") {
@@ -382,6 +384,9 @@ impl Subscribe {
             WSTopic::TradeOrders => {
                 private_channel = true;
                 String::from("/spotMarket/tradeOrders")
+            }
+            WSTopic::Kline(ref symbol, ref r#type) => {
+                format!("/market/candles:{}_{}", symbol, r#type)
             }
         };
 
